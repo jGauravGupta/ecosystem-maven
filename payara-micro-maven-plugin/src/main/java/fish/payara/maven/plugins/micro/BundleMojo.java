@@ -193,9 +193,15 @@ public class BundleMojo extends BasePayaraMojo {
                 appendSystemProperties = true;
             }
         }
-        
-        
-        if (payaraVersion != null) {
+    }
+
+    @Override
+    public void execute() throws MojoExecutionException {
+        if (skip) {
+            getLog().info("Bundle mojo execution is skipped");
+            return;
+        }
+         if (payaraVersion != null) {
             getLog().warn("Parameter 'payaraVersion' is deprecated and has been replaced by 'payaraMicroVersion' to stay in sync with the Payara Server Maven Plugin.");
             payaraMicroVersion = payaraVersion;
         }
@@ -207,14 +213,6 @@ public class BundleMojo extends BasePayaraMojo {
             } catch (MojoExecutionException ex) {
                 Logger.getLogger(BundleMojo.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-    }
-
-    @Override
-    public void execute() throws MojoExecutionException {
-        if (skip) {
-            getLog().info("Bundle mojo execution is skipped");
-            return;
         }
         MojoExecutor.ExecutionEnvironment environment = getEnvironment();
         BaseProcessor processor = constructProcessorChain();

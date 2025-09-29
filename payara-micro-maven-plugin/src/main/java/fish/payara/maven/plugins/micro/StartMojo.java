@@ -193,19 +193,7 @@ public class StartMojo extends BasePayaraMojo implements StartTask {
     StartMojo() {
         threadGroup = new ThreadGroup(MICRO_THREAD_NAME);
         
-        // Backward compatibility for params
-        if (javaPath != null) {
-            getLog().warn("Parameter 'javaPath' is deprecated and has been replaced by 'javaHome'.");
-            javaHome = javaPath;
-        }
-        if (payaraVersion != null) {
-            getLog().warn("Parameter 'payaraVersion' is deprecated and has been replaced by 'payaraMicroVersion' to stay in sync with the Payara Server Maven Plugin.");
-            payaraMicroVersion = payaraVersion;
-        }
-        if (payaraMicroAbsolutePath != null) {
-            getLog().warn("Parameter 'payaraMicroAbsolutePath' is deprecated and has been replaced by 'payaraMicroPath'.");
-            payaraMicroPath = payaraMicroAbsolutePath;
-        }
+        
         if (System.getProperty("daemon") != null) {
             daemon = Boolean.parseBoolean(System.getProperty("daemon"));
         }
@@ -249,6 +237,19 @@ public class StartMojo extends BasePayaraMojo implements StartTask {
 
     @Override
     public void execute() throws MojoExecutionException {
+        // Backward compatibility for params
+        if (javaPath != null) {
+            getLog().warn("Parameter 'javaPath' is deprecated and has been replaced by 'javaHome'.");
+            javaHome = javaPath;
+        }
+        if (payaraVersion != null) {
+            getLog().warn("Parameter 'payaraVersion' is deprecated and has been replaced by 'payaraMicroVersion' to stay in sync with the Payara Server Maven Plugin.");
+            payaraMicroVersion = payaraVersion;
+        }
+        if (payaraMicroAbsolutePath != null) {
+            getLog().warn("Parameter 'payaraMicroAbsolutePath' is deprecated and has been replaced by 'payaraMicroPath'.");
+            payaraMicroPath = payaraMicroAbsolutePath;
+        }
         if (trimLog == null) {
             trimLog = false;
         }
