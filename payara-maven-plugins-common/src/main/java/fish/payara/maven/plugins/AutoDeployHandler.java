@@ -48,7 +48,6 @@ import static fish.payara.maven.plugins.Configuration.INOTIFY_USER_LIMIT_REACHED
 import static fish.payara.maven.plugins.Configuration.JAVA_DIR;
 import static fish.payara.maven.plugins.Configuration.JAVA_FILE_EXTENSION;
 import static fish.payara.maven.plugins.Configuration.MAIN_DIR;
-import static fish.payara.maven.plugins.Configuration.MAVEN_MULTI_MODULE_PROJECT_DIRECTORY;
 import static fish.payara.maven.plugins.Configuration.OPTION_DISABLE_INCREMENTAL_COMPILATION;
 import static fish.payara.maven.plugins.Configuration.OPTION_OUTPUT_DIRECTORY;
 import static fish.payara.maven.plugins.Configuration.POM;
@@ -350,10 +349,11 @@ public abstract class AutoDeployHandler implements Runnable {
             Invoker invoker = new DefaultInvoker();
             invoker.setLogger(new InvokerLoggerImpl(log));
             invoker.setInputStream(InputStream.nullInputStream());
+            invoker.setWorkingDirectory(project.getBasedir());
 
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(new File(project.getBasedir(), POM_XML));
-            System.setProperty(MAVEN_MULTI_MODULE_PROJECT_DIRECTORY, project.getBasedir().toString());
+            request.addShellEnvironment("MAVEN_PROJECTBASEDIR", project.getBasedir().toString());
             if (goalsList.get(0).equals(GOAL_CLEAN)) {
                 deleteBuildDir(project.getBuild().getDirectory());
                 goalsList.remove(0);
