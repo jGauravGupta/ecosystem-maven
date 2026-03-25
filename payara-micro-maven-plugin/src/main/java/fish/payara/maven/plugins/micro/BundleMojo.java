@@ -39,6 +39,7 @@
 package fish.payara.maven.plugins.micro;
 
 import fish.payara.maven.plugins.micro.processor.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -239,7 +240,7 @@ public class BundleMojo extends BasePayaraMojo {
             .next(new StartClassCopyReplaceProcessor()).set(startClass)
             .next(new SystemPropAppendProcessor()).set(appendSystemProperties).set(mavenProject)
             .next(new CustomPropPrependProcessor()).set(systemProperties).set(mavenProject)
-            .next(new MicroJarBundleProcessor(uberJarClassifier));
+            .next(new MicroJarBundleProcessor(StringUtils.defaultIfEmpty(uberJarClassifier, Configuration.MICROBUNDLE_EXTENSION)));
 
         return microUnpackProcessor;
     }
