@@ -231,6 +231,7 @@ public class StartMojo extends ServerMojo implements StartTask {
 
     @Override
     public void execute() throws MojoExecutionException {
+        validateParameters();
         if (trimLog == null) {
             trimLog = false;
         }
@@ -466,6 +467,53 @@ public class StartMojo extends ServerMojo implements StartTask {
         });
     }
 
+    private void validateParameters() throws MojoExecutionException {
+        if (remote) {
+            if (hostName == null || hostName.trim().isEmpty()) {
+                throw new MojoExecutionException(
+                        "'hostName' is required when 'remote' mode is enabled. "
+                        + "Set it via the payara.host.name property or the PAYARA_HOST_NAME environment variable.");
+            }
+        }
+        validatePort(adminPort, "adminPort");
+        validatePort(httpPort, "httpPort");
+        validatePort(httpsPort, "httpsPort");
+        validatePort(debugPort, "debugPort");
+        if (protocol != null && !protocol.trim().isEmpty()) {
+            String proto = protocol.trim().toLowerCase();
+            if (!proto.equals("http") && !proto.equals("https")) {
+                throw new MojoExecutionException(
+                        "Invalid protocol '" + protocol + "'. Accepted values are 'http' and 'https'.");
+            }
+        }
+        if (httpConnectionTimeout != null && httpConnectionTimeout <= 0) {
+            throw new MojoExecutionException(
+                    "'httpConnectionTimeout' must be a positive value, but was: " + httpConnectionTimeout);
+        }
+        if (httpReadTimeout != null && httpReadTimeout <= 0) {
+            throw new MojoExecutionException(
+                    "'httpReadTimeout' must be a positive value, but was: " + httpReadTimeout);
+        }
+    }
+
+    private void validatePort(String portStr, String portName) throws MojoExecutionException {
+        if (portStr == null || portStr.trim().isEmpty()) {
+            return;
+        }
+        try {
+            int port = Integer.parseInt(portStr.trim());
+            if (port < 1 || port > 65535) {
+                throw new MojoExecutionException(
+                        "Invalid value for '" + portName + "': " + portStr
+                        + ". Port number must be between 1 and 65535.");
+            }
+        } catch (NumberFormatException e) {
+            throw new MojoExecutionException(
+                    "Invalid value for '" + portName + "': '" + portStr
+                    + "'. Port must be a valid integer.");
+        }
+    }
+
     private String decideOnWhichServerToUse() throws MojoExecutionException {
         if (payaraServerPath != null) {
             return payaraServerPath;
@@ -474,6 +522,10 @@ public class StartMojo extends ServerMojo implements StartTask {
         if (artifactItem != null 
                 && artifactItem.getGroupId() != null
                 && artifactItem.getArtifactId() != null) {
+            if (artifactItem.getVersion() == null || artifactItem.getVersion().trim().isEmpty()) {
+                throw new MojoExecutionException(
+                        "The 'version' element is required inside 'artifactItem' configuration.");
+            }
             DefaultArtifact artifact = new DefaultArtifact(artifactItem.getGroupId(),
                     artifactItem.getArtifactId(),
                     artifactItem.getVersion(),
