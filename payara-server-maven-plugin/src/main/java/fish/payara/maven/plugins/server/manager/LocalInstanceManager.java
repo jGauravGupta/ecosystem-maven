@@ -72,6 +72,7 @@ public class LocalInstanceManager extends InstanceManager<PayaraServerLocalInsta
     private static final String ERROR_JAVA_VERSION_NOT_FOUND = "Java version not found.";
     private static final String ERROR_BOOTSTRAP_JAR_NOT_FOUND = "No bootstrap jar exists.";
     private static final String ERROR_JAVA_VM_EXECUTABLE_NOT_FOUND = "Java VM executable for %s was not found.";
+    private static final java.util.regex.Pattern CRAC_OPTION_PATTERN = java.util.regex.Pattern.compile("^-XX:[+-]?CRaC.*");
 
     public LocalInstanceManager(PayaraServerLocalInstance payaraServer, Log log) {
         super(payaraServer, log);
@@ -119,7 +120,7 @@ public class LocalInstanceManager extends InstanceManager<PayaraServerLocalInsta
             boolean correctJDK = JDKVersion.isCorrectJDK(javaVersion, jvmOption.getVendor(), jvmOption.getMinVersion(), jvmOption.getMaxVersion());
             if (correctJDK
                     && jvmOption.getOption() != null
-                    && jvmOption.getOption().matches("^-XX:[+-]?CRaC.*")) {
+                    && CRAC_OPTION_PATTERN.matcher(jvmOption.getOption()).matches()) {
                 correctJDK = isCRaCSupported(javaHome);
             }
             if (correctJDK) {
