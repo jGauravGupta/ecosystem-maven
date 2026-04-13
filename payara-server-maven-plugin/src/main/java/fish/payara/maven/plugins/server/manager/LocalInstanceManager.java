@@ -60,6 +60,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  *
@@ -115,7 +116,13 @@ public class LocalInstanceManager extends InstanceManager<PayaraServerLocalInsta
         
         List<String> optList = new ArrayList<>();
         for (JvmOption jvmOption : jvmConfigReader.getJvmOptions()) {
-            if (JDKVersion.isCorrectJDK(javaVersion, jvmOption.getVendor(), jvmOption.getMinVersion(), jvmOption.getMaxVersion())) {
+            boolean correctJDK = JDKVersion.isCorrectJDK(javaVersion, jvmOption.getVendor(), jvmOption.getMinVersion(), jvmOption.getMaxVersion());
+            if (correctJDK
+                    && jvmOption.getOption() != null
+                    && jvmOption.getOption().matches("^-XX:[+-]?CRaC.*")) {
+                correctJDK = isCRaCSupported(javaHome);
+            }
+            if (correctJDK) {
                 optList.add(jvmOption.getOption());
             }
         }
@@ -156,6 +163,13 @@ public class LocalInstanceManager extends InstanceManager<PayaraServerLocalInsta
         ProcessBuilder processBuilder = new ProcessBuilder(args);
         processBuilder.directory(new File(payaraServer.getPath()));
         return processBuilder;
+    }
+
+    private boolean isCRaCSupported(String javaHome) {
+        return Optional.ofNullable(javaHome)
+                .map(home -> new File(home, "lib/criu"))
+                .map(File::exists)
+                .orElse(false);
     }
 
     private boolean isValidPort(String portStr) {
