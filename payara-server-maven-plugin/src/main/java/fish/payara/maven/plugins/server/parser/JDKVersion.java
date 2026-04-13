@@ -43,8 +43,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class JDKVersion {
+
+    private static final Pattern CRAC_OPTION_PATTERN = Pattern.compile("^-XX:[+-]?CRaC.*");
 
     private int major;
     private Integer minor;
@@ -285,5 +289,20 @@ public class JDKVersion {
             correctJDK = jdkVersion.le(maxVersion);
         }
         return correctJDK;
+    }
+
+    public static boolean isCorrectJDK(JDKVersion jdkVersion, JvmOption jvmOption, String javaHome) {
+        boolean correctJDK = isCorrectJDK(jdkVersion, jvmOption.getVendor(), jvmOption.getMinVersion(), jvmOption.getMaxVersion());
+        if (correctJDK && jvmOption.getOption() != null && CRAC_OPTION_PATTERN.matcher(jvmOption.getOption()).matches()) {
+            correctJDK = isCRaCSupported(javaHome);
+        }
+        return correctJDK;
+    }
+
+    public static boolean isCRaCSupported(String javaHome) {
+        return Optional.ofNullable(javaHome)
+                .map(home -> new File(home, "lib/criu"))
+                .map(File::exists)
+                .orElse(false);
     }
 }
