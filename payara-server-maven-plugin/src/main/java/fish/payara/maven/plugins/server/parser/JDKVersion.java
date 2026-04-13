@@ -291,9 +291,9 @@ public class JDKVersion {
         return correctJDK;
     }
 
-    public static boolean isCorrectJDK(JDKVersion jdkVersion, String vendor, JDKVersion minVersion, JDKVersion maxVersion, String option, String javaHome) {
-        boolean correctJDK = isCorrectJDK(jdkVersion, vendor, minVersion, maxVersion);
-        if (correctJDK && option != null && CRAC_OPTION_PATTERN.matcher(option).matches()) {
+    public static boolean isCorrectJDK(JDKVersion jdkVersion, JvmOption jvmOption, String javaHome) {
+        boolean correctJDK = isCorrectJDK(jdkVersion, jvmOption.getVendor(), jvmOption.getMinVersion(), jvmOption.getMaxVersion());
+        if (correctJDK && jvmOption.getOption() != null && CRAC_OPTION_PATTERN.matcher(jvmOption.getOption()).matches()) {
             correctJDK = isCRaCSupported(javaHome);
         }
         return correctJDK;
