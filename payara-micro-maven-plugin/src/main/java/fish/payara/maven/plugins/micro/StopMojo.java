@@ -87,7 +87,12 @@ public class StopMojo extends BasePayaraMojo {
         }
         String envTimeout = System.getenv("PAYARA_MAX_STOP_TIMEOUT_MILLIS");
         if (System.getProperty("maxStopTimeoutMillis") != null) {
-            maxStopTimeoutMillis = Integer.parseInt(System.getProperty("maxStopTimeoutMillis"));
+            try {
+                maxStopTimeoutMillis = Integer.parseInt(System.getProperty("maxStopTimeoutMillis"));
+            } catch (NumberFormatException e) {
+                getLog().warn("Invalid maxStopTimeoutMillis value. Falling back to default: 5000", e);
+                maxStopTimeoutMillis = 5000;
+            }
         } else if (envTimeout != null && !envTimeout.isEmpty()) {
             try {
                 maxStopTimeoutMillis = Integer.parseInt(envTimeout);

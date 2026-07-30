@@ -153,48 +153,28 @@ public class BundleMojo extends BasePayaraMojo {
         if (System.getProperty("autoDeployArtifact") != null) {
             autoDeployArtifact = Boolean.parseBoolean(System.getProperty("autoDeployArtifact"));
         } else if (autoDeployArtifactEnv != null && !autoDeployArtifactEnv.isEmpty()) {
-            try {
-                autoDeployArtifact = Boolean.parseBoolean(autoDeployArtifactEnv);
-            } catch (NumberFormatException e) {
-                getLog().warn("Invalid PAYARA_AUTO_DEPLOY_ARTIFACT value. Falling back to default: true", e);
-                autoDeployArtifact = true;
-            }
+            autoDeployArtifact = Boolean.parseBoolean(autoDeployArtifactEnv);
         }
         
         String autoDeployEmptyContextRootEnv = System.getenv("PAYARA_AUTO_DEPLOY_EMPTY_CONTEXT_ROOT");
         if (System.getProperty("autoDeployEmptyContextRoot") != null) {
             autoDeployEmptyContextRoot = Boolean.parseBoolean(System.getProperty("autoDeployEmptyContextRoot"));
         } else if (autoDeployEmptyContextRootEnv != null && !autoDeployEmptyContextRootEnv.isEmpty()) {
-            try {
-                autoDeployEmptyContextRoot = Boolean.parseBoolean(autoDeployEmptyContextRootEnv);
-            } catch (NumberFormatException e) {
-                getLog().warn("Invalid PAYARA_AUTO_DEPLOY_EMPTY_CONTEXT_ROOT value. Falling back to default: true", e);
-                autoDeployEmptyContextRoot = true;
-            }
+            autoDeployEmptyContextRoot = Boolean.parseBoolean(autoDeployEmptyContextRootEnv);
         }
         
         String autoDeployContextRootEnv = System.getenv("PAYARA_AUTO_DEPLOY_CONTEXT_ROOT");
         if (System.getProperty("autoDeployContextRoot") != null) {
             autoDeployContextRoot = System.getProperty("autoDeployContextRoot");
-        }else if (autoDeployContextRootEnv != null && !autoDeployContextRootEnv.isEmpty()) {
-            try {
-                autoDeployContextRoot = autoDeployContextRootEnv;
-            } catch (NumberFormatException e) {
-                getLog().warn("Invalid PAYARA_AUTO_DEPLOY_CONTEXT_ROOT value. Falling back to empty value.", e);
-                autoDeployContextRoot = "";
-            }
+        } else if (autoDeployContextRootEnv != null && !autoDeployContextRootEnv.isEmpty()) {
+            autoDeployContextRoot = autoDeployContextRootEnv;
         }
         
         String appendSystemPropertiesEnv = System.getenv("PAYARA_APPEND_SYSTEM_PROPERTIES");
         if (System.getProperty("appendSystemProperties") != null) {
             appendSystemProperties = Boolean.parseBoolean(System.getProperty("appendSystemProperties"));
         } else if (appendSystemPropertiesEnv != null && !appendSystemPropertiesEnv.isEmpty()) {
-            try {
-                appendSystemProperties = Boolean.parseBoolean(appendSystemPropertiesEnv);
-            } catch (NumberFormatException e) {
-                getLog().warn("Invalid PAYARA_APPEND_SYSTEM_PROPERTIES value. Falling back to default: true", e);
-                appendSystemProperties = true;
-            }
+            appendSystemProperties = Boolean.parseBoolean(appendSystemPropertiesEnv);
         }
         
     }
