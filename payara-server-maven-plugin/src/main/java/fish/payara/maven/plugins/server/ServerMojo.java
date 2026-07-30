@@ -71,7 +71,7 @@ public abstract class ServerMojo extends BasePayaraMojo {
      * Payara server domain to be used.
      */
     @Parameter(property = "payara.domain.name", defaultValue = "${env.PAYARA_DOMAIN_NAME}")
-    protected String domainName;
+    protected String domainName = "domain1";
 
     /**
      * Specifies the artifact item to be deployed.
@@ -152,6 +152,8 @@ public abstract class ServerMojo extends BasePayaraMojo {
     protected String instanceName;
     
     public ServerMojo() {
+        // domainName has field-level default "domain1"; if the environment variable resolves
+        // to an empty string at injection time, fall back to "domain1" here.
         if (domainName == null || domainName.isEmpty()) {
             domainName = "domain1";
         }
@@ -159,12 +161,23 @@ public abstract class ServerMojo extends BasePayaraMojo {
 
     protected String getAdminPasswordFromFile() {
         if (adminPasswordFile != null) {
+            java.io.File file = new java.io.File(adminPasswordFile);
+            if (!file.exists()) {
+                throw new IllegalArgumentException(
+                        "Admin password file not found: " + adminPasswordFile
+                        + ". Check the 'adminPasswordFile' configuration or the PAYARA_ADMIN_PASSWORD_FILE environment variable.");
+            }
             Properties props = new Properties();
-            try (FileInputStream fis = new FileInputStream(adminPasswordFile)) {
+            try (FileInputStream fis = new FileInputStream(file)) {
                 props.load(fis);
-                return props.getProperty("adminPassword");
+                String password = props.getProperty("AS_ADMIN_PASSWORD");
+                if (password == null) {
+                    password = props.getProperty("adminPassword");
+                }
+                return password;
             } catch (Exception ex) {
-                return null;
+                throw new IllegalArgumentException(
+                        "Failed to read admin password from file: " + adminPasswordFile, ex);
             }
         }
         return adminPassword;
